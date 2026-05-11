@@ -1,65 +1,211 @@
-import Image from "next/image";
+// "use client"; // We need this to track the user's typing in real-time
+
+// import { useState } from "react";
+// import { motion } from "framer-motion";
+// import { generateItinerary } from "./actions";
+// import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+
+// export default function Home() {
+//   // State to track if all fields are filled
+//   const [formData, setFormData] = useState({
+//     destination: "",
+//     budget: "",
+//     days: "",
+//     travelers: "",
+//   });
+
+//   // Check if every field has text in it
+//   const isFormComplete = Object.values(formData).every((val) => val.trim() !== "");
+
+//   return (
+//     // Background Image & Overlay
+//     <main 
+//       className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
+//       style={{ backgroundImage: "url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2074&auto=format&fit=crop')" }}
+//     >
+//       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+
+//       {/* Animated Form Card */}
+//       <motion.div 
+//         initial={{ opacity: 0, y: 30 }}
+//         animate={{ opacity: 1, y: 0 }}
+//         transition={{ duration: 0.8, ease: "easeOut" }}
+//         className="relative z-10 w-full max-w-lg p-8 bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20"
+//       >
+//         <div className="text-center mb-8">
+//           <h1 className="text-4xl font-serif text-slate-900 mb-2">Design Your Escape</h1>
+//           <p className="text-slate-500 text-sm">Tell us your dream, AI will handle the details.</p>
+//         </div>
+
+//         <form action={generateItinerary} className="space-y-5">
+//           <Input 
+//             name="destination"
+//             placeholder="Where to? (e.g., Manali, Paris)" 
+//             className="h-12 text-lg rounded-xl bg-white/50 border-slate-200"
+//             onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
+//             required
+//           />
+          
+//           <div className="grid grid-cols-2 gap-4">
+//             <Input 
+//               name="duration"
+//               type="number"
+//               placeholder="How many days?" 
+//               className="h-12 text-lg rounded-xl bg-white/50 border-slate-200"
+//               onChange={(e) => setFormData({ ...formData, days: e.target.value })}
+//               required
+//             />
+//              <Input 
+//               name="members"
+//               type="number"
+//               placeholder="Travelers?" 
+//               className="h-12 text-lg rounded-xl bg-white/50 border-slate-200"
+//               onChange={(e) => setFormData({ ...formData, travelers: e.target.value })}
+//               required
+//             />
+//           </div>
+
+//           <Input 
+//             name="budget"
+//             placeholder="Budget in Rupees (e.g., 20,000)" 
+//             className="h-12 text-lg rounded-xl bg-white/50 border-slate-200"
+//             onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+//             required
+//           />
+
+//           {/* The Smart Button */}
+//           <Button 
+//             type="submit" 
+//             disabled={!isFormComplete}
+//             className={`w-full h-14 text-lg rounded-xl transition-all duration-500 ${
+//               isFormComplete 
+//                 ? "bg-slate-900 text-white hover:bg-slate-800 shadow-lg" 
+//                 : "bg-slate-200 text-slate-400 cursor-not-allowed"
+//             }`}
+//           >
+//             {isFormComplete ? "Plan My Trip ✨" : "Complete details to start"}
+//           </Button>
+//         </form>
+//       </motion.div>
+//     </main>
+//   );
+// }
+
+
+"use client";
+
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { generateItinerary } from "./actions";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 export default function Home() {
+  const [formData, setFormData] = useState({ destination: "", budget: "", days: "", travelers: "" });
+  const [isLoading, setIsLoading] = useState(false); // NEW: Tracks the loading state
+
+  const isFormComplete = Object.values(formData).every((val) => val.trim() !== "");
+
+  // NEW: This function handles the submit, shows the loader, and catches errors
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault(); // Prevents the page from refreshing
+    setIsLoading(true);     // Turns on the loading animation
+
+    try {
+      // Create the data object to send to your Server Action
+      const submitData = new FormData(event.currentTarget);
+      
+      // Call the server action
+      await generateItinerary(submitData);
+      
+      // Note: We don't need to set isLoading to false here because the Server Action 
+      // will redirect the user to the next page automatically!
+      
+    } catch (error) {
+      console.error("Form submission failed:", error);
+      alert("Something went wrong! Please check your VS Code terminal for the exact error.");
+      setIsLoading(false); // Turn off loading so they can try again
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main 
+      className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
+      style={{ backgroundImage: "url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2074&auto=format&fit=crop')" }}
+    >
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative z-10 w-full max-w-lg p-8 bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20"
+      >
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-serif text-slate-900 mb-2">Design Your Escape</h1>
+          <p className="text-slate-500 text-sm">Tell us your dream, AI will handle the details.</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Notice we changed action={...} to onSubmit={handleSubmit} */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <Input 
+            name="destination"
+            placeholder="Where to? (e.g., Manali, Paris)" 
+            className="h-12 text-lg rounded-xl bg-white/50 border-slate-200"
+            onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
+            required
+          />
+          
+          <div className="grid grid-cols-2 gap-4">
+            <Input 
+              name="duration"
+              type="number"
+              placeholder="How many days?" 
+              className="h-12 text-lg rounded-xl bg-white/50 border-slate-200"
+              onChange={(e) => setFormData({ ...formData, days: e.target.value })}
+              required
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+             <Input 
+              name="members"
+              type="number"
+              placeholder="Travelers?" 
+              className="h-12 text-lg rounded-xl bg-white/50 border-slate-200"
+              onChange={(e) => setFormData({ ...formData, travelers: e.target.value })}
+              required
+            />
+          </div>
+
+          <Input 
+            name="budget"
+            placeholder="Budget in Rupees (e.g., 20,000)" 
+            className="h-12 text-lg rounded-xl bg-white/50 border-slate-200"
+            onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+            required
+          />
+
+          <Button 
+            type="submit" 
+            disabled={!isFormComplete || isLoading}
+            className={`w-full h-14 text-lg rounded-xl transition-all duration-500 flex items-center justify-center ${
+              isFormComplete 
+                ? "bg-slate-900 text-white hover:bg-slate-800 shadow-lg" 
+                : "bg-slate-200 text-slate-400 cursor-not-allowed"
+            }`}
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            {/* If isLoading is true, show the spinner. Otherwise, show the text. */}
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Generating Itinerary...
+              </>
+            ) : (
+              "Plan My Trip ✨"
+            )}
+          </Button>
+        </form>
+      </motion.div>
+    </main>
   );
 }
