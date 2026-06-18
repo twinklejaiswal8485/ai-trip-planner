@@ -6,16 +6,13 @@ datasource db {
   provider = "postgresql"
 }
 
-// This is the table where your AI trips will be saved
 model Trip {
-  id           String   @id @default(cuid())
-  createdAt    DateTime @default(now())
-  
-  destination  String
-  duration     Int      
-  budget       String   
-  members      Int      
-  
-  itinerary    Json     
-  imageUrl     String?  
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  destination String
+  duration    Int
+  budget      String
+  members     Int
+  itinerary   Json
+  imageUrl    String?
 }

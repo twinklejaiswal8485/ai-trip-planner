@@ -76,11 +76,13 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, IndianRupee } from "lucide-react";
 
 // The 'params' object automatically grabs the ID from the URL (e.g., /trip/[id])
-export default async function TripResultsPage({ params }: { params: { id: string } }) {
+// In Next.js 16, params is a Promise and needs to be awaited
+export default async function TripResultsPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   
   // 1. Ask Prisma to find the exact trip in Supabase
   const trip = await prisma.trip.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   // 2. If someone types a random ID in the URL, show a 404 page
@@ -170,5 +172,4 @@ export default async function TripResultsPage({ params }: { params: { id: string
   
   
 
-  
   

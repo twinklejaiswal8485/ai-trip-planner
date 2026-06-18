@@ -209,3 +209,69 @@ export default function Home() {
     </main>
   );
 }
+
+
+
+
+
+// 'use client'
+
+// import { useState } from 'react';
+// import { generateItinerary } from './actions'; // Adjust the import path if needed
+
+// export default function Home() {
+//   const [prompt, setPrompt] = useState('');
+//   const [output, setOutput] = useState('');
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     if (!prompt.trim()) return;
+
+//     setIsLoading(true);
+//     setOutput(''); // Clear previous output
+    
+//     // Call the Server Action
+//     const result = await generateItinerary(prompt);
+    
+//     if (result.success && result.text) {
+//       setOutput(result.text);
+//     } else {
+//       setOutput(result.text || 'An error occurred.');
+//     }
+    
+//     setIsLoading(false);
+//   };
+
+//   return (
+//     <main className="flex flex-col items-center justify-center min-h-screen p-8 bg-gray-50">
+//       <div className="w-full max-w-2xl p-6 bg-white rounded-lg shadow-md">
+//         <h1 className="mb-6 text-2xl font-bold text-gray-800">Ask Gemini</h1>
+        
+//         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+//           <textarea
+//             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+//             rows={4}
+//             placeholder="What do you want to build today?"
+//             value={prompt}
+//             onChange={(e) => setPrompt(e.target.value)}
+//           />
+          
+//           <button 
+//             type="submit" 
+//             disabled={isLoading}
+//             className="px-4 py-2 font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-blue-400"
+//           >
+//             {isLoading ? 'Generating...' : 'Generate'}
+//           </button>
+//         </form>
+
+//         {output && (
+//           <div className="p-4 mt-8 prose prose-blue bg-gray-100 rounded-md whitespace-pre-wrap">
+//             {output}
+//           </div>
+//         )}
+//       </div>
+//     </main>
+//   );
+// }
