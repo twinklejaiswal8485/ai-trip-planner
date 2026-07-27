@@ -192,7 +192,7 @@ export async function generateItinerary(formData: FormData) {
     // Note: If 'gemini-3.1-pro' gives a 429 error again, change to 'gemini-2.5-flash'
     const result = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Generate a ${duration}-day trip itinerary for ${destination} for ${members} people with a budget of ${budget}.`,
+      contents: `Generate a ${duration}-day trip itinerary for ${destination} for ${members} people with a budget of ${budget}. Ensure you include specific, highly-rated lunch and dinner restaurant suggestions with local cuisine for each day.`,
       config: {
         // This forces Gemini to return valid JSON so you don't need .replace() regex
         responseMimeType: "application/json",
